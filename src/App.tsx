@@ -1,69 +1,49 @@
 import { useState } from "react";
 import "./App.css";
-import { APClient } from "./archipelago/APClient";
+
+import { GameManager } from "./core/GameManager";
+import { megaManGame } from "./games/megaman/config";
 
 function App() {
-  const [apClient] = useState(
-  () =>
-    new APClient({
-      host: "archipelago.gg",
-      port: 57925,
-      slot: "Tenkaichi2",
-    })
-);
-  const [answer, setAnswer] = useState("");
-  const [message, setMessage] = useState("");
+  const [gameManager] = useState(
+    () => new GameManager()
+  );
 
-  const correctAnswer = "zelda";
-  
+  const [selectedGame, setSelectedGame] =
+    useState(false);
 
-  function checkAnswer() {
-    if (answer.trim().toLowerCase() === correctAnswer) {
-      setMessage("🎉 Bonne réponse !");
-    } else {
-      setMessage("❌ Mauvaise réponse !");
-    }
+  function selectMegaMan() {
+    gameManager.selectGame(megaManGame);
+    setSelectedGame(true);
+  }
+
+  if (!selectedGame) {
+    return (
+      <div className="app">
+        <h1>Gamedle Archipelago</h1>
+
+        <h2>Choisissez une variante</h2>
+
+        <button onClick={selectMegaMan}>
+          🤖 Mega Man
+        </button>
+      </div>
+    );
   }
 
   return (
     <div className="app">
-      <h1>Gamedle Archipelago</h1>
-      <button onClick={() => apClient.connect()}>
-          🔌 Connecter à Archipelago
-      </button>
+      <h1>Mega Man Gamedle</h1>
 
-        <button onClick={() => apClient.disconnect()}>
-          🔌 Déconnecter
-        </button>
-      <div className="card">
-        <h2>Quel est ce jeu ?</h2>
+      <p>
+        Variante :
+        {" "}
+        {gameManager.getGame()?.name}
+      </p>
 
-        <p>
-          Un célèbre jeu d'aventure avec un héros nommé Link.
-        </p>
-
-        <input
-          type="text"
-          placeholder="Ta réponse..."
-          value={answer}
-          onChange={(event) => setAnswer(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              checkAnswer();
-            }
-          }}
-        />
-
-        <button onClick={checkAnswer}>
-          Valider
-        </button>
-
-        {message && (
-          <p className="message">
-            {message}
-          </p>
-        )}
-      </div>
+      <p>
+        Les modes de jeu arriveront ici.
+      </p>
     </div>
   );
 }
